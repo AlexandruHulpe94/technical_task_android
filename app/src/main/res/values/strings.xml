@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">app</string>
+    <string name="title_alert_dialog">Delete</string>
+    <string name="message_alert_dialog">Are you sure you want to remove this user?</string>
+    <string name="positive_button_title">Yes</string>
+    <string name="negative_button_title">No</string>
+    <string name="add_user_error_text">Server error</string>
+    <string name="add_user_success_text">User added</string>
+    <string name="delete_user_error_text">Cannot delete user</string>
+    <string name="delete_user_success_text">User deleted</string>
+    <string name="add_user_empty_name_text">Please enter the name</string>
+    <string name="add_user_empty_email_text">Please enter the email</string>
+    <string name="no_results">No results</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_email">Enter email</string>
+</resources>
