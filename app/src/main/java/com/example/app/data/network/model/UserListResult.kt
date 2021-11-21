@@ -1,7 +1,7 @@
 package com.example.app.data.network.model
 
-data class UserResult(
+data class UserListResult(
     val code: Int,
     val meta: Meta,
-    val data: List<User>
+    val data: List<UserResponse>
 )

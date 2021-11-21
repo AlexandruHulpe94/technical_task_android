@@ -5,24 +5,24 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app.data.network.model.User
+import com.example.app.data.network.model.UserResponse
 import com.example.app.databinding.ItemUserBinding
 
-private val itemsDiffCallback = object : DiffUtil.ItemCallback<User>() {
+private val itemsDiffCallback = object : DiffUtil.ItemCallback<UserResponse>() {
 
-    override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+    override fun areItemsTheSame(oldItem: UserResponse, newItem: UserResponse): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+    override fun areContentsTheSame(oldItem: UserResponse, newItem: UserResponse): Boolean {
         return oldItem == newItem
     }
 }
 
-class UserAdapter(private val longClickCallback: (User) -> Unit) :
-    ListAdapter<User, UserAdapter.UserViewHolder>(itemsDiffCallback) {
+class UserAdapter(private val longClickCallback: (UserResponse) -> Unit) :
+    ListAdapter<UserResponse, UserAdapter.UserViewHolder>(itemsDiffCallback) {
 
-    private val items = mutableListOf<User>()
+    private val items = mutableListOf<UserResponse>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val binding = ItemUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -35,7 +35,7 @@ class UserAdapter(private val longClickCallback: (User) -> Unit) :
 
     override fun getItemCount(): Int = items.size
 
-    fun setItems(elements: List<User>) {
+    fun setItems(elements: List<UserResponse>) {
         items.clear()
         items.addAll(elements)
         notifyDataSetChanged()
@@ -44,7 +44,7 @@ class UserAdapter(private val longClickCallback: (User) -> Unit) :
     inner class UserViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(user: User) {
+        fun bind(user: UserResponse) {
             binding.apply {
                 userContainer.setOnLongClickListener {
                     longClickCallback.invoke(user)

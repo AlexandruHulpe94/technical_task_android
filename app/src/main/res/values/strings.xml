@@ -4,7 +4,7 @@
     <string name="message_alert_dialog">Are you sure you want to remove this user?</string>
     <string name="positive_button_title">Yes</string>
     <string name="negative_button_title">No</string>
-    <string name="add_user_error_text">Server error</string>
+    <string name="add_user_error_text">Cannot add user</string>
     <string name="add_user_success_text">User added</string>
     <string name="delete_user_error_text">Cannot delete user</string>
     <string name="delete_user_success_text">User deleted</string>

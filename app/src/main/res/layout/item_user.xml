@@ -6,7 +6,7 @@
 
         <variable
             name="user"
-            type="com.example.app.data.network.model.User" />
+            type="com.example.app.data.network.model.UserResponse" />
 
     </data>
 

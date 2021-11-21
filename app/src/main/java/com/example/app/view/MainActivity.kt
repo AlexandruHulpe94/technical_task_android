@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.example.app.R
-import com.example.app.data.network.model.User
+import com.example.app.data.network.model.UserResponse
 import com.example.app.di.DaggerAppComponent
 import com.example.app.view.adapter.UserAdapter
 import com.example.app.viewmodel.UserViewModel
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun onLongClickPressed(user: User) {
+    private fun onLongClickPressed(user: UserResponse) {
         val alertDialogBuilder = AlertDialog.Builder(this)
         alertDialogBuilder.setTitle(R.string.title_alert_dialog)
         alertDialogBuilder.setMessage(R.string.message_alert_dialog)

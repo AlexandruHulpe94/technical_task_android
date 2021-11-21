@@ -1,11 +1,11 @@
 package com.example.app.viewmodel
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.app.data.network.Callback
 import com.example.app.data.network.model.User
+import com.example.app.data.network.model.UserResponse
 import com.example.app.di.DaggerAppComponent
 import com.example.app.repository.UserRepository
 import io.reactivex.Completable
@@ -19,8 +19,8 @@ class UserViewModel : ViewModel() {
     @Inject
     lateinit var repository: UserRepository
 
-    private val _users by lazy { MutableLiveData<List<User>>() }
-    val users: LiveData<List<User>>
+    private val _users by lazy { MutableLiveData<List<UserResponse>>() }
+    val users: LiveData<List<UserResponse>>
         get() = _users
 
     private val _loadUsersProgress by lazy { MutableLiveData<Boolean>() }
@@ -70,56 +70,47 @@ class UserViewModel : ViewModel() {
                     _loadUsersError.postValue(false)
                 }) {
                     _loadUsersProgress.postValue(true)
-                    Log.e(TAG, it.message ?: "Error message")
                     _loadUsersError.postValue(true)
                     _loadUsersProgress.postValue(false)
                 })
     }
 
-    fun deleteUser(userId: Long): Completable {
+    fun deleteUser(userId: Long) {
         compositeDisposable.add(
-            repository.delete(userId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                    {
+            repository.delete(userId,
+                object : Callback<Unit?> {
+                    override fun onSuccess(response: Unit?) {
                         _deleteUserEvent.value = DeleteUserEvent.Success
-                    },
-                    {
-                        Log.d(TAG, it.message ?: "Error message")
+                    }
+
+                    override fun onError(message: String) {
                         _deleteUserEvent.value = DeleteUserEvent.Error
-                    })
-        )
-        if (_deleteUserEvent.value == DeleteUserEvent.Success) {
-            return Completable.complete()
-        }
-        return Completable.error(Throwable("Something went wrong"))
+                    }
+                }
+            ))
     }
 
-    fun createUser(name: String?, email: String?): Completable {
+    fun createUser(name: String?, email: String?) {
         if (name.isNullOrBlank()) {
             _addUserEvent.value = AddUserEvent.EmptyName
-            return Completable.error(Throwable("Empty name"))
+            return
         }
         if (email.isNullOrBlank()) {
             _addUserEvent.value = AddUserEvent.EmptyEmail
-            return Completable.error(Throwable("Empty email"))
+            return
         }
         compositeDisposable.add(
-            repository.createUser(User(System.currentTimeMillis(), name, email, "male", "active"))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                    {
+            repository.createUser(User(name, email, "male", "active"),
+                object : Callback<UserResponse> {
+                    override fun onSuccess(response: UserResponse) {
                         _addUserEvent.value = AddUserEvent.Success
-                    }, {
+                    }
+
+                    override fun onError(message: String) {
                         _addUserEvent.value = AddUserEvent.Error
-                    })
+                    }
+                })
         )
-        if (_addUserEvent.value == AddUserEvent.Success) {
-            return Completable.complete()
-        }
-        return Completable.error(Throwable("Something went wrong"))
     }
 
     override fun onCleared() {
