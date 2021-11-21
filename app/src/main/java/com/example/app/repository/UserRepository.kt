@@ -41,7 +41,7 @@ class UserRepository {
             .subscribeOn(Schedulers.io())
             .subscribe(
                 {
-                    callback.onSuccess(it)
+                    callback.onSuccess(it.data)
                 }, {
                     callback.onError(message = it.message.toString())
                 })

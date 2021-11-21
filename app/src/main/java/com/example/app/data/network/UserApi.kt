@@ -21,6 +21,6 @@ interface UsersApi {
 
     @Headers("Authorization: $API_KEY")
     @POST("users")
-    fun addUser(@Body user: User): Single<UserResponse>
+    fun addUser(@Body user: User): Single<UserWrapper>
 
 }

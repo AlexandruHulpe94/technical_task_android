@@ -1,6 +1,7 @@
 package com.example.app
 
 import com.example.app.data.network.Callback
+import com.example.app.data.network.UserWrapper
 import com.example.app.data.network.UsersApi
 import com.example.app.data.network.model.*
 import com.example.app.repository.UserRepository
@@ -78,11 +79,13 @@ class UserViewModelTest {
             )
         ).thenReturn(
             Single.just(
-                UserResponse(
-                    213L, "some name",
-                    "some email",
-                    "male",
-                    "active"
+                UserWrapper(
+                    UserResponse(
+                        213L, "some name",
+                        "some email",
+                        "male",
+                        "active"
+                    )
                 )
             )
         )
