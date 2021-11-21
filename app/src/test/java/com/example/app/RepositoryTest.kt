@@ -16,7 +16,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 
-class UserViewModelTest {
+class RepositoryTest {
 
     @InjectMocks
     lateinit var userRepository: UserRepository
