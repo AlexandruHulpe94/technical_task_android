@@ -70,7 +70,7 @@ class UserViewModel : ViewModel() {
                     _loadUsersProgress.postValue(false)
                     _loadUsersError.postValue(false)
                 }) {
-                    _loadUsersError.postValue(false)
+                    _loadUsersError.postValue(true)
                     _loadUsersProgress.postValue(false)
                 })
     }
