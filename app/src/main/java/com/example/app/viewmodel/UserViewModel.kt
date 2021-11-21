@@ -8,6 +8,7 @@ import com.example.app.data.network.model.User
 import com.example.app.data.network.model.UserResponse
 import com.example.app.di.DaggerAppComponent
 import com.example.app.repository.UserRepository
+import com.example.app.util.isEmailValid
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -75,7 +76,7 @@ class UserViewModel : ViewModel() {
                 })
     }
 
-    fun deleteUser(userId: Long) {
+    fun deleteUser(userId: Long): Completable {
         compositeDisposable.add(
             repository.delete(userId,
                 object : Callback<Unit?> {
@@ -88,16 +89,24 @@ class UserViewModel : ViewModel() {
                     }
                 }
             ))
+        if (_deleteUserEvent.value == DeleteUserEvent.Error) {
+            return Completable.error(Throwable("Error"))
+        }
+        return Completable.complete()
     }
 
-    fun createUser(name: String?, email: String?) {
+    fun createUser(name: String?, email: String?): Completable {
         if (name.isNullOrBlank()) {
             _addUserEvent.value = AddUserEvent.EmptyName
-            return
+            return Completable.error(Throwable("Error"))
         }
         if (email.isNullOrBlank()) {
             _addUserEvent.value = AddUserEvent.EmptyEmail
-            return
+            return Completable.error(Throwable("Error"))
+        }
+        if (!email.isEmailValid()) {
+            _addUserEvent.value = AddUserEvent.EmptyEmail
+            return Completable.error(Throwable("Invalid mail"))
         }
         compositeDisposable.add(
             repository.createUser(User(name, email, "male", "active"),
@@ -111,6 +120,10 @@ class UserViewModel : ViewModel() {
                     }
                 })
         )
+        if (_addUserEvent.value == AddUserEvent.Error) {
+            return Completable.error(Throwable("Error"))
+        }
+        return Completable.complete()
     }
 
     override fun onCleared() {

@@ -13,9 +13,9 @@ interface UsersApi {
     @GET("users")
     fun getUsers(@Query(value = "page") pageNumber: Int? = null): Single<UserListResult>
 
+    @Headers("Authorization: $API_KEY")
     @DELETE("users/{id}")
     fun deleteUser(
-        @Header("Authorization") token: String,
         @Path("id") userId: Long
     ): Completable
 

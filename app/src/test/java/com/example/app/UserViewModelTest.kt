@@ -1,33 +1,106 @@
 package com.example.app
 
-import com.example.app.data.network.model.User
+import com.example.app.data.network.Callback
+import com.example.app.data.network.UsersApi
+import com.example.app.data.network.model.*
 import com.example.app.repository.UserRepository
-import com.example.app.viewmodel.UserViewModel
 import io.reactivex.Completable
+import io.reactivex.Single
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.schedulers.Schedulers
 import org.junit.Before
 import org.junit.Test
+import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 
 class UserViewModelTest {
 
-    @Mock
+    @InjectMocks
     lateinit var userRepository: UserRepository
+
+    @Mock
+    lateinit var userService: UsersApi
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
     }
 
     @Test
-    fun testCreateUserRepoGetCalled() {
-        val userViewModel: UserViewModel = spy(UserViewModel())
+    fun testPagination() {
+        `when`(userService.getUsers(0)).thenReturn(
+            Single.just(
+                UserListResult(
+                    200, Meta(Pagination(1, 2, 3, 4)),
+                    listOf(
+                        UserResponse(
+                            213L, "some name",
+                            "some email",
+                            "male",
+                            "active"
+                        )
+                    )
+                )
+            )
+        )
+        `when`(userService.getUsers()).thenReturn(
+            Single.just(
+                UserListResult(
+                    200, Meta(Pagination(1, 2, 3, 4)),
+                    listOf(
+                        UserResponse(
+                            213L, "some name",
+                            "some email",
+                            "male",
+                            "active"
+                        )
+                    )
+                )
+            )
+        )
+        userRepository.getLastPageUsers()
+        verify(userService, times(1)).getUsers()
+    }
 
-        userViewModel.createUser("some name", "some email")
-        verify(userRepository, times(1)).createUser(
+    @Test
+    fun testCreateUser() {
+        `when`(
+            userService.addUser(
+                User(
+                    "some name",
+                    "some email",
+                    "male",
+                    "active"
+                )
+            )
+        ).thenReturn(
+            Single.just(
+                UserResponse(
+                    213L, "some name",
+                    "some email",
+                    "male",
+                    "active"
+                )
+            )
+        )
+        userRepository.createUser(User(
+            "some name",
+            "some email",
+            "male",
+            "active"
+        ), object : Callback<UserResponse> {
+            override fun onSuccess(response: UserResponse) {
+
+            }
+
+            override fun onError(message: String) {
+            }
+        })
+        verify(userService, times(1)).addUser(
             User(
-                23241L,
                 "some name",
                 "some email",
                 "male",
@@ -37,84 +110,24 @@ class UserViewModelTest {
     }
 
     @Test
-    fun testDeleteUserRepoGetCalled() {
-        val userViewModel: UserViewModel = spy(UserViewModel())
+    fun testDeleteUser() {
+        `when`(
+            userService.deleteUser(
+                123L
+            )
+        ).thenReturn(
+            Completable.complete()
+        )
+        userRepository.delete(123L, object : Callback<Unit?> {
+            override fun onSuccess(response: Unit?) {
 
-        userViewModel.deleteUser(123L)
-        verify(userRepository, times(1)).delete(
+            }
+
+            override fun onError(message: String) {
+            }
+        })
+        verify(userService, times(1)).deleteUser(
             123L
         )
-    }
-
-    @Test
-    fun testGetUserSRepoGetCalled() {
-        val userViewModel: UserViewModel = spy(UserViewModel())
-
-        userViewModel.getUsers()
-        verify(userRepository, times(1)).getLastPageUsers()
-    }
-
-    @Test
-    fun successCreateUser() {
-        val userViewModel: UserViewModel = spy(UserViewModel())
-        `when`(
-            userRepository.createUser(
-                User(
-                    23241L,
-                    "some name",
-                    "some email",
-                    "male",
-                    "active"
-                )
-            )
-        )
-            .thenReturn(Completable.complete())
-
-        userViewModel.createUser("testName", "test@email.com")
-            .test()
-            .assertComplete()
-    }
-
-    @Test
-    fun errorCreateUser() {
-        val userViewModel: UserViewModel = spy(UserViewModel())
-        `when`(
-            userRepository.createUser(
-                User(
-                    23241L,
-                    "some name",
-                    "some email",
-                    "male",
-                    "active"
-                )
-            )
-        )
-            .thenReturn(Completable.error(Throwable("Some error")))
-
-        userViewModel.createUser("testName", "test@email.com")
-            .test()
-            .assertError(Throwable("Some error"))
-    }
-
-    @Test
-    fun successDeleteUser() {
-        val userViewModel: UserViewModel = spy(UserViewModel())
-        `when`(userRepository.delete(23241L))
-            .thenReturn(Completable.complete())
-
-        userViewModel.deleteUser(23241L)
-            .test()
-            .assertComplete()
-    }
-
-    @Test
-    fun errorDeleteUser() {
-        val userViewModel: UserViewModel = spy(UserViewModel())
-        `when`(userRepository.delete(23241L))
-            .thenReturn((Completable.error(Throwable("Some error"))))
-
-        userViewModel.deleteUser(23241L)
-            .test()
-            .assertError(Throwable("Some error"))
     }
 }

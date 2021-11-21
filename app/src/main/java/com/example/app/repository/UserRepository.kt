@@ -5,7 +5,6 @@ import com.example.app.data.network.UsersApi
 import com.example.app.data.network.model.User
 import com.example.app.data.network.model.UserResponse
 import com.example.app.di.DaggerAppComponent
-import com.example.app.internal.API_KEY
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -37,7 +36,8 @@ class UserRepository {
     }
 
     fun createUser(user: User, callback: Callback<UserResponse>) =
-        usersApiService.addUser(user).observeOn(AndroidSchedulers.mainThread())
+        usersApiService.addUser(user)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(
                 {
@@ -47,7 +47,7 @@ class UserRepository {
                 })
 
     fun delete(userId: Long, callback: Callback<Unit?>) =
-        usersApiService.deleteUser(API_KEY, userId).observeOn(AndroidSchedulers.mainThread())
+        usersApiService.deleteUser(userId).observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(
                 {
