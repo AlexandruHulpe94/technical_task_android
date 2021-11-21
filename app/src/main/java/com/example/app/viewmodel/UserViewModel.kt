@@ -64,14 +64,13 @@ class UserViewModel : ViewModel() {
             repository.getLastPageUsers()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
+                .doOnSubscribe { _loadUsersProgress.postValue(true) }
                 .subscribe({ users ->
-                    _loadUsersProgress.postValue(true)
                     _users.postValue(users)
                     _loadUsersProgress.postValue(false)
                     _loadUsersError.postValue(false)
                 }) {
-                    _loadUsersProgress.postValue(true)
-                    _loadUsersError.postValue(true)
+                    _loadUsersError.postValue(false)
                     _loadUsersProgress.postValue(false)
                 })
     }
